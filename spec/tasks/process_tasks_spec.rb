@@ -13,9 +13,23 @@ RSpec.describe 'ProcessTasks' do
     end
 
     context "a valid executable command" do
+      let(:log_data) do
+        {
+          :process_command_line=>"echo Hello",
+          :process_id => Integer,
+          :process_name=>"echo",
+          :timestamp => be_within(60).of(Time.now),
+          :user => Etc.getlogin,
+        }
+      end
       subject(:result) { klass.execute("echo Hello")}
       it "calls the command" do
         expect { subject }.to output("Hello\n").to_stdout
+      end
+
+      it "logs the relevant information" do
+        expect(ActivityLog).to receive(:log_activity).with(match(log_data))
+        subject
       end
     end
   end

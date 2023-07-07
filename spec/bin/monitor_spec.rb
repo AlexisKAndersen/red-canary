@@ -1,10 +1,11 @@
+require "spec_helper"
+
 RSpec.describe "monitor" do
   subject(:result) { %x(#{command}) }
   let(:command) { "ruby bin/monitor.rb #{task} #{subtask} #{args}" }
   let(:args) { "" }
   let(:task) { "" }
   let(:subtask) { "" }
-  let(:logfile) { CSV.read("log/activity.csv") }
 
   context "running with no command" do
     it "outputs help text" do
@@ -29,6 +30,10 @@ RSpec.describe "monitor" do
 
         it "returns the output of the command" do
           expect(result).to include("ruby 3.2.2")
+        end
+
+        it "logs the call" do
+          expect { subject }.to change { ActivityLog.records.count }.by(1)
         end
       end
     end

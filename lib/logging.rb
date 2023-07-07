@@ -1,0 +1,1 @@
+require "logging/activity_log"
