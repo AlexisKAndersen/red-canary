@@ -51,13 +51,56 @@ RSpec.describe "monitor" do
     describe "create" do
       let(:subtask) { "create" }
 
-      before { FileUtils.rm(args) if File.exist?(args) }
+      after { FileUtils.rm(args) if File.exist?(args) }
 
       context "creating a file" do
         let(:args) { 'ultra_sensitive_pii.xml' }
 
         it "creates the file" do
           expect { subject }.to change{ File.exist?(args) }.to(true)
+        end
+
+        it "logs the call" do
+          expect { subject }.to change { ActivityLog.records.count }.by(1)
+        end
+      end
+    end
+
+    describe "delete" do
+      let(:subtask) { "delete" }
+
+      before { FileUtils.touch(args) unless File.exist?(args) }
+
+      context "deleting a file" do
+        let(:args) { 'mona_lisa_original.png' }
+
+        it "deletes the file" do
+          expect { subject }.to change{ File.exist?(args) }.to(false)
+        end
+
+        it "logs the call" do
+          expect { subject }.to change { ActivityLog.records.count }.by(1)
+        end
+      end
+    end
+
+    describe "append" do
+      let(:subtask) { "append" }
+      let(:content) { "This file has one line\n" }
+      let(:added) { "This file actually has two lines" }
+      let(:filename) { "inane_ramblings.txt" }
+
+      around(:example) do |ex|
+        File.write(filename, content) unless File.exist?(filename)
+        ex.run
+        FileUtils.rm(filename) if File.exist?(filename)
+      end
+
+      context "appending to a file" do
+        let(:args) { %|#{filename} "#{added}"|}
+
+        it "appends to the file" do
+          expect { subject }.to change{ File.read(filename) }.from(content).to(/^#{content}#{added}\s*$/)
         end
 
         it "logs the call" do
