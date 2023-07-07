@@ -1,7 +1,7 @@
 class ActivityLog
   class << self
     def logfile
-      "log/activity.yml"
+      ENV["ACTIVITY_LOG_FILE"]
     end
 
     def log_activity data
