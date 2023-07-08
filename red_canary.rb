@@ -3,6 +3,8 @@ require "yaml"
 require "time"
 require "etc"
 require "fileutils"
+require "json"
+require "uri"
 
 lib = File.expand_path("lib",File.dirname(__FILE__))
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)

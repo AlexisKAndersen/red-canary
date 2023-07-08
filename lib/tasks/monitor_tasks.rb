@@ -4,4 +4,7 @@ class MonitorTasks < Thor
 
   desc "file", "Manage Files"
   subcommand "file", FileTasks
+
+  desc "connection", "Make network calls"
+  subcommand "connection", ConnectionTasks
 end

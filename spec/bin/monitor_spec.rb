@@ -109,4 +109,78 @@ RSpec.describe "monitor" do
       end
     end
   end
+
+  describe "making network calls" do
+    let(:task) { "connection" }
+
+    context "with no subtask" do
+      it "outputs help text" do
+        expect(result).to include("monitor.rb connection help [COMMAND]")
+      end
+    end
+
+    describe "get" do
+      let(:subtask) { "get" }
+
+      context "making a get call" do
+        let(:args) { 'https://httpbingo.org/' }
+
+        it "returns the output of the command" do
+          expect(result).to include("A golang port of the venerable <a href=\"https://httpbin.org/\">httpbin.org</a>")
+        end
+
+        it "logs the call" do
+          expect { subject }.to change { ActivityLog.records.count }.by(1)
+        end
+      end
+    end
+
+    describe "post" do
+      let(:subtask) { "post" }
+      let(:url) { 'https://postman-echo.com/post' }
+      let(:payload) { "text payload" }
+      let(:response) do
+        a_hash_including(
+          {
+            "url" => url,
+            "data" => payload,
+          }
+        )
+      end
+
+      context "making a post call" do
+        let(:args) { %|#{url} '#{payload}'| }
+
+        it "returns the output of the command" do
+          expect(JSON.parse(result)).to match(response)
+        end
+
+        it "logs the call" do
+          expect { subject }.to change { ActivityLog.records.count }.by(1)
+        end
+      end
+
+      context "making a post call with json content" do
+        let(:args) { %|#{url} #{payload.to_json.dump} --content-type=application/json| }
+        let(:payload) { {"payload" => "json content"} }
+        let(:response) do
+          a_hash_including(
+            {
+              "url" => url,
+              "data" => payload,
+              "json" => payload,
+            }
+          )
+        end
+
+        it "returns the output of the command" do
+          expect(JSON.parse(result)).to match(response)
+        end
+
+        it "logs the call" do
+          expect { subject }.to change { ActivityLog.records.count }.by(1)
+        end
+      end
+    end
+  end
 end
