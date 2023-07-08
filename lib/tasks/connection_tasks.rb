@@ -3,7 +3,7 @@ class ConnectionTasks < Thor
     @ip ||= `curl https://www.icanhazip.com/`.delete("\n")
   end
 
-  desc "get", "Make a get request to ADDRESS"
+  desc "get [ADDRESS]", "Make a get request to ADDRESS"
   def get(address)
     fail ArgumentError, "Must provide an address, but received '#{address}'" if address.nil? || address.empty?
 
@@ -26,7 +26,7 @@ class ConnectionTasks < Thor
     ActivityLog.log_activity(log_data)
   end
 
-  desc "post", "Make a post request with PAYLOAD to ADDRESS"
+  desc "post [ADDRESS] '[PAYLOAD]'", "Make a post request with PAYLOAD to ADDRESS"
   method_option :content_type, :default => "text/plain"
   def post(address, payload)
     fail ArgumentError, "Must provide an address, but received '#{address}'" if address.nil? || address.empty?

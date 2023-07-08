@@ -21,7 +21,7 @@ class FileTasks < Thor
     ActivityLog.log_activity(log_data)
   end
 
-  desc "delete", "Delete a file with FILENAME"
+  desc "delete [FILENAME]", "Delete a file with FILENAME"
   def delete(filename)
     fail ArgumentError, "Must provide a filename, but received '#{filename}'" if filename.nil? || filename.empty?
 
@@ -43,7 +43,7 @@ class FileTasks < Thor
     ActivityLog.log_activity(log_data)
   end
 
-  desc "append", "Append CONTENT to a file with FILENAME"
+  desc "append [FILENAME] \"[CONTENT]\"", "Append CONTENT to a file with FILENAME"
   def append(filename, content)
     fail ArgumentError, "Must provide a filename, but received '#{filename}'" if filename.nil? || filename.empty?
     fail ArgumentError, "Must provide data to append" if content.nil? || content.empty?
